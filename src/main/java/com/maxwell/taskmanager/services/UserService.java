@@ -3,6 +3,7 @@ package com.maxwell.taskmanager.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.maxwell.taskmanager.domain.User;
 import com.maxwell.taskmanager.domain.enums.UserRole;
@@ -16,6 +17,9 @@ public class UserService {
 	
 	@Autowired
 	private UserRepository repo;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	/**
      * Returns all users stored in the database.
@@ -42,7 +46,9 @@ public class UserService {
 		User user = new User();
 		user.setUsername(dto.getUserName());
 		user.setEmail(dto.getEmail());
-		user.setPassword(dto.getPassword());
+		
+		// 🔐 encrypt password before saving
+		user.setPassword(passwordEncoder.encode(dto.getPassword()));
 		user.setRoles(UserRole.valueOf(dto.getRoles().toUpperCase()));;
 		
 		repo.save(user);
