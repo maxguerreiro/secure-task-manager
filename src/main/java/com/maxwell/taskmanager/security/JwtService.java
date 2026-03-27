@@ -27,4 +27,25 @@ public class JwtService {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
+    
+    public String extractUsername(String token) {
+    	return Jwts.parserBuilder()
+    			.setSigningKey(SECRET_KEY)
+    			.build()
+    			.parseClaimsJws(token)
+    			.getBody()
+    			.getSubject();
+    }
+    
+    public boolean isTokenValid(String token) {
+    	try {
+			Jwts.parserBuilder()
+			.setSigningKey(SECRET_KEY)
+			.build()
+			.parseClaimsJws(token);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+    }
 }
