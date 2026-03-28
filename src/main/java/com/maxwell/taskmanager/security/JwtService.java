@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.maxwell.taskmanager.domain.User;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -47,5 +48,13 @@ public class JwtService {
 		} catch (Exception e) {
 			return false;
 		}
+    }
+    
+    public Claims getClaims(String token) {
+    	return Jwts.parserBuilder()
+    			.setSigningKey(SECRET_KEY)
+    			.build()
+    			.parseClaimsJws(token)
+    			.getBody();
     }
 }
