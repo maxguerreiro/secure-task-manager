@@ -4,20 +4,23 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.maxwell.taskmanager.domain.Task;
 import com.maxwell.taskmanager.dtos.TaskDTO;
 import com.maxwell.taskmanager.services.TaskService;
 
 @RestController
-@RequestMapping("tasks")
+@RequestMapping(value = "tasks")
 public class TaskResource {
 	
 	@Autowired
 	private TaskService service;
-	
-	
+
 	/**
 	 * Endpoint to retrieve all tasks of the authenticated user.
 	 *
@@ -26,8 +29,29 @@ public class TaskResource {
 	 *
 	 * @return HTTP 200 response containing a list of TaskDTO
 	 */
+	@GetMapping("/mytasks")
 	public ResponseEntity<List<TaskDTO>> findMyTasks() {
 		return ResponseEntity.ok().body(service.findMyTasks());
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<TaskDTO>> findAll(){
+		return ResponseEntity.ok().body(service.findAll());
+	}
+	
+	@GetMapping("/mytasks/{id}")
+	public ResponseEntity<TaskDTO> findMyTasksById(@PathVariable String id) {
+		return ResponseEntity.ok().body(service.findMyTasksById(id));
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<TaskDTO> findTasksById(@PathVariable String id) {
+		return ResponseEntity.ok().body(service.findTasksById(id));
+	}
+	
+	@PostMapping
+	public ResponseEntity<TaskDTO> newTask(@RequestBody Task task) {
+		return ResponseEntity.ok().body(service.newTask(task));
 	}
 
 }
