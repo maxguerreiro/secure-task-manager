@@ -53,6 +53,25 @@ public class UserService {
 		return new UserDTO(user);
 	}
 
+	
+	/**
+	 * Retrieves a user by its ID with access control validation.
+	 *
+	 * This method ensures that:
+	 * - Users with ADMIN role can access any user data.
+	 * - Regular users (USER role) can only access their own data.
+	 *
+	 * The currently authenticated user is obtained from the SecurityContext,
+	 * and their identity is validated against the requested user ID.
+	 *
+	 * @param id the ID of the user to be retrieved
+	 * @return a UserDTO containing the user's public data
+	 *
+	 * @throws RuntimeException if:
+	 * - the authenticated user is not found in the database
+	 * - the target user does not exist
+	 * - the authenticated user does not have permission to access the requested data
+	 */
 	public UserDTO findById(String id) {
 
 		var auth = SecurityContextHolder.getContext().getAuthentication();
