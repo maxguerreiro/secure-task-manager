@@ -97,5 +97,49 @@ public class TaskService {
 		
 		return new TaskDTO(newTask);
 	}
+	
+	public TaskDTO update(String id, Task updatedTask) {
+		
+		var auth = SecurityContextHolder.getContext().getAuthentication();
+		String email = auth.getName();
+		
+		User user = userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+		
+		Task task = taskRepo.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
+		
+		if (!user.getId().equals(task.getUserId())) {
+			throw new RuntimeException("Access denied");
+		}
+		
+		task.setTitle(updatedTask.getTitle());
+		task.setDescription(updatedTask.getDescription());
+		
+		Task saved = taskRepo.save(task);
 
+	    return new TaskDTO(saved);
+	}
+	
+	public TaskDTO completeTask(String id) {
+		var auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		String email = auth.getName();
+		
+		User user = userRepo.findByEmail(email)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+		
+		Task task = taskRepo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Task not fund"));
+		
+		if (!user.getId().equals(task.getUserId())) {
+			throw new RuntimeException("Access denied");
+		}
+		
+		task.setCompleted(!task.isCompleted());
+		
+		Task saved = taskRepo.save(task);
+		
+		return new TaskDTO(saved);
+		
+		
+	}
 }

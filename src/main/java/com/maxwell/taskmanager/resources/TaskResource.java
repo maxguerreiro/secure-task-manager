@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,6 +54,16 @@ public class TaskResource {
 	@PostMapping
 	public ResponseEntity<TaskDTO> newTask(@RequestBody Task task) {
 		return ResponseEntity.ok().body(service.newTask(task));
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<TaskDTO> update(@PathVariable String id, @RequestBody Task updatedTask) {
+		return ResponseEntity.ok().body(service.update(id, updatedTask));
+	}
+	
+	@PatchMapping("/{id}/complete")
+	public ResponseEntity<TaskDTO> complete(@PathVariable String id) {
+	    return ResponseEntity.ok(service.completeTask(id));
 	}
 
 }
