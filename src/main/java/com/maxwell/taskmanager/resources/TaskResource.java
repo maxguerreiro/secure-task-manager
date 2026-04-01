@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.maxwell.taskmanager.domain.Task;
+import com.maxwell.taskmanager.dtos.TaskCreateDTO;
 import com.maxwell.taskmanager.dtos.TaskDTO;
 import com.maxwell.taskmanager.services.TaskService;
 
@@ -52,12 +52,12 @@ public class TaskResource {
 	}
 	
 	@PostMapping
-	public ResponseEntity<TaskDTO> newTask(@RequestBody Task task) {
+	public ResponseEntity<TaskDTO> newTask(@RequestBody TaskCreateDTO task) {
 		return ResponseEntity.ok().body(service.newTask(task));
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<TaskDTO> update(@PathVariable String id, @RequestBody Task updatedTask) {
+	public ResponseEntity<TaskDTO> update(@PathVariable String id, @RequestBody TaskCreateDTO updatedTask) {
 		return ResponseEntity.ok().body(service.update(id, updatedTask));
 	}
 	

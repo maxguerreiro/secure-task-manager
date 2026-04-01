@@ -25,7 +25,10 @@ public class SecurityConfig {
 		http.csrf(csrf -> csrf.disable())
 		.authorizeHttpRequests(auth -> auth.requestMatchers("/auth/**").permitAll()
 				.requestMatchers(HttpMethod.POST, "/users").permitAll()
+				.requestMatchers(HttpMethod.DELETE, "/users").permitAll()
 				.requestMatchers("/users").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.POST, "/tasks").permitAll()
+				.requestMatchers("/tasks").hasRole("ADMIN")
 				
 				.anyRequest().authenticated()).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 		

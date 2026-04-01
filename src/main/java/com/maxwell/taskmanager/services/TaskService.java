@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.maxwell.taskmanager.domain.Task;
 import com.maxwell.taskmanager.domain.User;
+import com.maxwell.taskmanager.dtos.TaskCreateDTO;
 import com.maxwell.taskmanager.dtos.TaskDTO;
 import com.maxwell.taskmanager.repositories.TaskRepository;
 import com.maxwell.taskmanager.repositories.UserRepository;
@@ -82,7 +83,7 @@ public class TaskService {
 		
 	}
 	
-	public TaskDTO newTask(Task task) {
+	public TaskDTO newTask(TaskCreateDTO dto) {
 		
 		var auth = SecurityContextHolder.getContext().getAuthentication();
 		
@@ -91,14 +92,16 @@ public class TaskService {
 		User user = userRepo.findByEmail(email).
 				orElseThrow(() -> new RuntimeException("User not found"));
 		
+		Task task = new Task();
+		task.setTitle(dto.getTitle());
+		task.setDescription(dto.getDescription());
+		task.setCompleted(false);
 		task.setUserId(user.getId());
 		
-		Task newTask = taskRepo.save(task);
-		
-		return new TaskDTO(newTask);
+		return new TaskDTO(taskRepo.save(task));
 	}
 	
-	public TaskDTO update(String id, Task updatedTask) {
+	public TaskDTO update(String id, TaskCreateDTO updatedTask) {
 		
 		var auth = SecurityContextHolder.getContext().getAuthentication();
 		String email = auth.getName();

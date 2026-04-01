@@ -15,11 +15,17 @@ import com.maxwell.taskmanager.repositories.UserRepository;
 @Service
 public class UserService {
 
+    private final TaskService taskService;
+
 	@Autowired
 	private UserRepository repo;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+    UserService(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
 	/**
 	 * Returns all users stored in the database.
@@ -93,5 +99,59 @@ public class UserService {
 		User target = repo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
 		return new UserDTO(target);
+	}
+
+	public UserDTO update(String id, UserCreateDTO dto) {
+		
+		var auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		String email = auth.getName();
+		String role = auth.getAuthorities().iterator().next().getAuthority();
+		
+		User loggedUser = repo.findByEmail(email)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+		
+		User target = repo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Target not found"));
+		
+		boolean isAdmin = role.equals("ROLE_ADMIN");
+		boolean isOwner = loggedUser.getId().equals(id);
+		
+		if (!isAdmin && !isOwner) {
+			throw new RuntimeException("Access dinied");
+		}
+		
+		target.setUsername(dto.getUserName());
+		target.setEmail(dto.getEmail());
+		
+		if (dto.getPassword() != null) {
+			target.setPassword(passwordEncoder.encode(dto.getPassword()));
+		}
+		
+		return new UserDTO(repo.save(target));
+	}
+	
+	public void delete(String id) {
+		var auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		String email = auth.getName();
+		String role = auth.getAuthorities().iterator().next().getAuthority();
+		
+		System.out.printf("EMAIL: " + email);
+		System.out.println("ROLE: " + role);
+		
+		User loggedUser = repo.findByEmail(email)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+		User target = repo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Target not found"));
+		
+		boolean isAdmin = role.equals("ROLE_ADMIN");
+		boolean isOwner = loggedUser.getId().equals(id);
+		
+		if (!isAdmin && !isOwner) {
+			throw new RuntimeException("Access denied");
+		}
+		
+		repo.delete(target);
 	}
 }
