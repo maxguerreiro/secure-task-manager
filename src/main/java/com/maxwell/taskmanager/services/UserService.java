@@ -11,6 +11,7 @@ import com.maxwell.taskmanager.domain.enums.UserRole;
 import com.maxwell.taskmanager.dtos.UserCreateDTO;
 import com.maxwell.taskmanager.dtos.UserDTO;
 import com.maxwell.taskmanager.repositories.UserRepository;
+import com.maxwell.taskmanager.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class UserService {
@@ -85,10 +86,10 @@ public class UserService {
 		String email = auth.getName();
 		String role = auth.getAuthorities().iterator().next().getAuthority();
 
-		User loggedUser = repo.findByEmail(email).orElseThrow(() -> new RuntimeException("Logged user not found"));
+		User loggedUser = repo.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException(id));
 
 		if (role.equals("ROLE_ADMIN")) {
-			User target = repo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+			User target = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
 			return new UserDTO(target);
 		}
 
@@ -96,7 +97,7 @@ public class UserService {
 			throw new RuntimeException("Access denied");
 		}
 
-		User target = repo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+		User target = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
 
 		return new UserDTO(target);
 	}
