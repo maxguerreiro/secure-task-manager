@@ -25,17 +25,12 @@ public class TaskService {
 	
 	
 	/**
-	 * Retrieves all tasks belonging to the currently authenticated user.
+	 * Retrieves all tasks belonging to the authenticated user.
 	 *
-	 * This method extracts the authenticated user's identity from the SecurityContext,
-	 * fetches the corresponding user from the database, and returns all tasks
-	 * associated with that user.
+	 * The user is identified through the SecurityContext,
+	 * ensuring that only their own tasks are returned.
 	 *
-	 * Ensures that each user only has access to their own tasks.
-	 *
-	 * @return a list of TaskDTO representing the user's tasks
-	 *
-	 * @throws RuntimeException if the authenticated user is not found in the database
+	 * @return list of TaskDTO
 	 */
 	public List<TaskDTO> findMyTasks() {
 		
@@ -59,6 +54,17 @@ public class TaskService {
 				.toList();
 	}
 	
+	/**
+	 * Retrieves a specific task belonging to the authenticated user.
+	 *
+	 * Ensures that the user can only access their own task.
+	 *
+	 * @param id task ID
+	 * @return TaskDTO
+	 *
+	 * @throws ResourceNotFoundException if task or user not found
+	 * @throws ForbiddenException if task does not belong to the user
+	 */
 	public TaskDTO findMyTasksById(String id) {
 		var auth = SecurityContextHolder.getContext().getAuthentication();
 		String email = auth.getName();
@@ -76,6 +82,17 @@ public class TaskService {
 		return new TaskDTO(task);
 	}
 	
+	/**
+	 * Retrieves a task by ID without ownership validation.
+	 *
+	 * This method is intended for administrative use and should
+	 * be protected at the controller/security level.
+	 *
+	 * @param id task ID
+	 * @return TaskDTO
+	 *
+	 * @throws ResourceNotFoundException if task not found
+	 */
 	public TaskDTO findTasksById(String id) {
 		Task task = taskRepo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException(id));
@@ -84,6 +101,17 @@ public class TaskService {
 		
 	}
 	
+	/**
+	 * Creates a new task for the authenticated user.
+	 *
+	 * The task is automatically associated with the user
+	 * based on the authentication token.
+	 *
+	 * @param dto task creation data
+	 * @return created TaskDTO
+	 *
+	 * @throws ResourceNotFoundException if user not found
+	 */
 	public TaskDTO newTask(TaskCreateDTO dto) {
 		
 		var auth = SecurityContextHolder.getContext().getAuthentication();
@@ -102,6 +130,18 @@ public class TaskService {
 		return new TaskDTO(taskRepo.save(task));
 	}
 	
+	/**
+	 * Updates a task with ownership validation.
+	 *
+	 * Only the task owner is allowed to update it.
+	 *
+	 * @param id task ID
+	 * @param dto updated data
+	 * @return updated TaskDTO
+	 *
+	 * @throws ResourceNotFoundException if task or user not found
+	 * @throws ForbiddenException if user is not the task owner
+	 */
 	public TaskDTO update(String id, TaskCreateDTO updatedTask) {
 		
 		var auth = SecurityContextHolder.getContext().getAuthentication();
@@ -123,6 +163,17 @@ public class TaskService {
 	    return new TaskDTO(saved);
 	}
 	
+	/**
+	 * Marks a task as completed.
+	 *
+	 * Only the task owner is allowed to perform this operation.
+	 *
+	 * @param id task ID
+	 * @return updated TaskDTO
+	 *
+	 * @throws ResourceNotFoundException if task or user not found
+	 * @throws ForbiddenException if user is not the task owner
+	 */
 	public TaskDTO completeTask(String id) {
 		var auth = SecurityContextHolder.getContext().getAuthentication();
 		

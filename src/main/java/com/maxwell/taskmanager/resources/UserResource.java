@@ -21,10 +21,10 @@ import com.maxwell.taskmanager.services.UserService;
 import jakarta.validation.Valid;
 
 /**
- * REST controller responsible for handling user-related requests.
- * 
- * This is a temporary test endpoint that returns a static list of users.
- * It will be replaced by a real implementation using database integration.
+ * REST controller responsible for user management.
+ *
+ * Handles operations such as retrieving, updating,
+ * and deleting users with proper access control.
  */
 @RestController
 @RequestMapping(value = "/users")

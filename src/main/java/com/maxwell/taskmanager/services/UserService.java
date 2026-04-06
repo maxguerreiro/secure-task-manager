@@ -59,20 +59,14 @@ public class UserService {
 	/**
 	 * Retrieves a user by its ID with access control validation.
 	 *
-	 * This method ensures that:
-	 * - Users with ADMIN role can access any user data.
-	 * - Regular users (USER role) can only access their own data.
+	 * - ADMIN users can access any user
+	 * - Regular users can only access their own data
 	 *
-	 * The currently authenticated user is obtained from the SecurityContext,
-	 * and their identity is validated against the requested user ID.
+	 * @param id the ID of the user
+	 * @return UserDTO containing user data
 	 *
-	 * @param id the ID of the user to be retrieved
-	 * @return a UserDTO containing the user's public data
-	 *
-	 * @throws RuntimeException if:
-	 * - the authenticated user is not found in the database
-	 * - the target user does not exist
-	 * - the authenticated user does not have permission to access the requested data
+	 * @throws ResourceNotFoundException if user does not exist
+	 * @throws ForbiddenException if access is denied
 	 */
 	public UserDTO findById(String id) {
 
@@ -97,6 +91,21 @@ public class UserService {
 		return new UserDTO(target);
 	}
 
+	/**
+	 * Updates a user's data with access control validation.
+	 *
+	 * - ADMIN users can update any user
+	 * - Regular users can only update their own data
+	 *
+	 * Password is encoded before being saved.
+	 *
+	 * @param id the ID of the user to update
+	 * @param dto data to update
+	 * @return updated UserDTO
+	 *
+	 * @throws ResourceNotFoundException if user does not exist
+	 * @throws ForbiddenException if access is denied
+	 */
 	public UserDTO update(String id, UserCreateDTO dto) {
 		
 		var auth = SecurityContextHolder.getContext().getAuthentication();
@@ -127,6 +136,17 @@ public class UserService {
 		return new UserDTO(repo.save(target));
 	}
 	
+	/**
+	 * Deletes a user with access control validation.
+	 *
+	 * - ADMIN users can delete any user
+	 * - Regular users can only delete their own account
+	 *
+	 * @param id the ID of the user to delete
+	 *
+	 * @throws ResourceNotFoundException if user does not exist
+	 * @throws ForbiddenException if access is denied
+	 */
 	public void delete(String id) {
 		var auth = SecurityContextHolder.getContext().getAuthentication();
 		

@@ -12,9 +12,23 @@ import com.maxwell.taskmanager.services.exceptions.ResourceNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * Global exception handler responsible for intercepting
+ * application exceptions and returning standardized HTTP responses.
+ *
+ * This class ensures consistent error structure across the API
+ * and maps custom exceptions to appropriate HTTP status codes.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 	
+	/**
+	 * Handles ResourceNotFoundException and returns HTTP 404.
+	 *
+	 * @param ex the exception thrown
+	 * @param request the HTTP request
+	 * @return standardized error response
+	 */
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<StandardError> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
 		HttpStatus status = HttpStatus.NOT_FOUND;
@@ -22,6 +36,13 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(status).body(err);
 	}
 	
+	/**
+	 * Handles ForbiddenException and returns HTTP 403.
+	 *
+	 * @param ex the exception thrown
+	 * @param request the HTTP request
+	 * @return standardized error response
+	 */
 	@ExceptionHandler
 	public ResponseEntity<StandardError> forbiddenException(ForbiddenException ex, HttpServletRequest request) {
 		HttpStatus status = HttpStatus.FORBIDDEN;

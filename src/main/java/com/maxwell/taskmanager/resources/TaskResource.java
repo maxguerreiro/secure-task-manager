@@ -16,6 +16,12 @@ import com.maxwell.taskmanager.dtos.TaskCreateDTO;
 import com.maxwell.taskmanager.dtos.TaskDTO;
 import com.maxwell.taskmanager.services.TaskService;
 
+/**
+ * REST controller responsible for task-related operations.
+ *
+ * Provides endpoints for creating, retrieving, updating,
+ * and completing tasks associated with authenticated users.
+ */
 @RestController
 @RequestMapping(value = "tasks")
 public class TaskResource {
