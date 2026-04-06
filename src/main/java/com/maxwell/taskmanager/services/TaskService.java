@@ -12,6 +12,7 @@ import com.maxwell.taskmanager.dtos.TaskCreateDTO;
 import com.maxwell.taskmanager.dtos.TaskDTO;
 import com.maxwell.taskmanager.repositories.TaskRepository;
 import com.maxwell.taskmanager.repositories.UserRepository;
+import com.maxwell.taskmanager.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class TaskService {
@@ -63,10 +64,10 @@ public class TaskService {
 		String email = auth.getName();
 		
 		User user = userRepo.findByEmail(email)
-				.orElseThrow(() -> new RuntimeException("User not found"));
+				.orElseThrow(() -> new ResourceNotFoundException(id));
 		
 		Task task = taskRepo.findById(id)
-				.orElseThrow(() -> new RuntimeException("Task not found"));
+				.orElseThrow(() -> new ResourceNotFoundException(id));
 		
 		if (!user.getId().equals(task.getUserId())) {
 			throw new RuntimeException("Access denied");
@@ -77,7 +78,7 @@ public class TaskService {
 	
 	public TaskDTO findTasksById(String id) {
 		Task task = taskRepo.findById(id)
-				.orElseThrow(() -> new RuntimeException("Task not found"));
+				.orElseThrow(() -> new ResourceNotFoundException(id));
 		
 		return new TaskDTO(task);
 		
@@ -106,9 +107,9 @@ public class TaskService {
 		var auth = SecurityContextHolder.getContext().getAuthentication();
 		String email = auth.getName();
 		
-		User user = userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+		User user = userRepo.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException(id));
 		
-		Task task = taskRepo.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
+		Task task = taskRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
 		
 		if (!user.getId().equals(task.getUserId())) {
 			throw new RuntimeException("Access denied");
@@ -128,10 +129,10 @@ public class TaskService {
 		String email = auth.getName();
 		
 		User user = userRepo.findByEmail(email)
-				.orElseThrow(() -> new RuntimeException("User not found"));
+				.orElseThrow(() -> new ResourceNotFoundException(id));
 		
 		Task task = taskRepo.findById(id)
-				.orElseThrow(() -> new RuntimeException("Task not fund"));
+				.orElseThrow(() -> new ResourceNotFoundException(id));
 		
 		if (!user.getId().equals(task.getUserId())) {
 			throw new RuntimeException("Access denied");

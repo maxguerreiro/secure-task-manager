@@ -11,22 +11,17 @@ import com.maxwell.taskmanager.domain.enums.UserRole;
 import com.maxwell.taskmanager.dtos.UserCreateDTO;
 import com.maxwell.taskmanager.dtos.UserDTO;
 import com.maxwell.taskmanager.repositories.UserRepository;
+import com.maxwell.taskmanager.services.exceptions.ForbiddenException;
 import com.maxwell.taskmanager.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class UserService {
-
-    private final TaskService taskService;
 
 	@Autowired
 	private UserRepository repo;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
-    UserService(TaskService taskService) {
-        this.taskService = taskService;
-    }
 
 	/**
 	 * Returns all users stored in the database.
@@ -94,7 +89,7 @@ public class UserService {
 		}
 
 		if (!loggedUser.getId().equals(id)) {
-			throw new RuntimeException("Access denied");
+			throw new ForbiddenException("Access denied");
 		}
 
 		User target = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
@@ -110,16 +105,16 @@ public class UserService {
 		String role = auth.getAuthorities().iterator().next().getAuthority();
 		
 		User loggedUser = repo.findByEmail(email)
-				.orElseThrow(() -> new RuntimeException("User not found"));
+				.orElseThrow(() -> new ResourceNotFoundException(id));
 		
 		User target = repo.findById(id)
-				.orElseThrow(() -> new RuntimeException("Target not found"));
+				.orElseThrow(() -> new ResourceNotFoundException(id));
 		
 		boolean isAdmin = role.equals("ROLE_ADMIN");
 		boolean isOwner = loggedUser.getId().equals(id);
 		
 		if (!isAdmin && !isOwner) {
-			throw new RuntimeException("Access dinied");
+			throw new ForbiddenException("Access denied");
 		}
 		
 		target.setUsername(dto.getUserName());
@@ -142,15 +137,15 @@ public class UserService {
 		System.out.println("ROLE: " + role);
 		
 		User loggedUser = repo.findByEmail(email)
-				.orElseThrow(() -> new RuntimeException("User not found"));
+				.orElseThrow(() -> new ResourceNotFoundException(id));
 		User target = repo.findById(id)
-				.orElseThrow(() -> new RuntimeException("Target not found"));
+				.orElseThrow(() -> new ResourceNotFoundException(id));
 		
 		boolean isAdmin = role.equals("ROLE_ADMIN");
 		boolean isOwner = loggedUser.getId().equals(id);
 		
 		if (!isAdmin && !isOwner) {
-			throw new RuntimeException("Access denied");
+			throw new ForbiddenException("Access denied");
 		}
 		
 		repo.delete(target);
