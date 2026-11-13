@@ -1,6 +1,10 @@
 package com.maxwell.taskmanager.security;
 
 import java.security.Key;
+import org.springframework.beans.factory.annotation.Value;
+import io.jsonwebtoken.io.Decoder;
+import io.jsonwebtoken.io.Decoders;
+
 import java.util.Date;
 
 import org.springframework.stereotype.Service;
@@ -14,9 +18,13 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
+	
+	private final Key secretKey;
 
-	private final Key SECRET_KEY = Keys.hmacShaKeyFor(
-            "my-super-secret-key-that-is-very-long-and-secure-123456".getBytes());
+	public JwtService(@Value("${jwt.secret}") String secret) {
+	    byte[] keyBytes = Decoders.BASE64.decode(secret);
+	    this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+	}
 
     public String generateToken(User user) {
 
@@ -25,13 +33,13 @@ public class JwtService {
                 .claim("role", user.getRoles().name())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1h
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
     
     public String extractUsername(String token) {
     	return Jwts.parserBuilder()
-    			.setSigningKey(SECRET_KEY)
+    			.setSigningKey(secretKey)
     			.build()
     			.parseClaimsJws(token)
     			.getBody()
@@ -41,7 +49,7 @@ public class JwtService {
     public boolean isTokenValid(String token) {
     	try {
 			Jwts.parserBuilder()
-			.setSigningKey(SECRET_KEY)
+			.setSigningKey(secretKey)
 			.build()
 			.parseClaimsJws(token);
 			return true;
@@ -52,7 +60,7 @@ public class JwtService {
     
     public Claims getClaims(String token) {
     	return Jwts.parserBuilder()
-    			.setSigningKey(SECRET_KEY)
+    			.setSigningKey(secretKey)
     			.build()
     			.parseClaimsJws(token)
     			.getBody();
