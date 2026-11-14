@@ -49,7 +49,7 @@ public class UserService {
 
 		// 🔐 encrypt password before saving
 		user.setPassword(passwordEncoder.encode(dto.getPassword()));
-		user.setRoles(dto.getRoles() != null ? UserRole.valueOf(dto.getRoles().toUpperCase()) : UserRole.USER);
+		user.setRoles(UserRole.USER);
 
 		repo.save(user);
 		return new UserDTO(user);

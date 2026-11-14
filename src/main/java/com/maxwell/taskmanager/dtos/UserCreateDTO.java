@@ -17,28 +17,29 @@ public class UserCreateDTO {
 	@NotBlank(message = "Password is required")
 	private String password;
 	
-	private String roles;
+	//private String roles;
 	
 	public UserCreateDTO() {
 	}
 
 	public UserCreateDTO(@NotBlank(message = "Username is required") String userName,
-			@Email(message = "Invalid email") String email, @NotBlank(message = "Password is required") String password,
-			String roles) {
+			@Email(message = "Invalid email")@NotBlank(message = "Password is required")String email, @NotBlank(message = "Password is required") String password) {
 		super();
 		this.userName = userName;
 		this.email = email;
 		this.password = password;
-		this.roles = roles;
+		//this.roles = roles;
 	}
 
+	/*
 	public String getRoles() {
 		return roles;
 	}
 
 	public void setRoles(String roles) {
 		this.roles = roles;
-	}
+	} 
+	*/
 
 	public String getUserName() {
 		return userName;
